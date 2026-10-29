@@ -101,8 +101,10 @@ public final class VelmoraScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+    public boolean mouseClicked(net.minecraft.client.gui.Click click, boolean doubled) {
+        double mouseX = click.x();
+        double mouseY = click.y();
+        if (click.button() == GLFW.GLFW_MOUSE_BUTTON_1) {
             int w = Math.min(760, this.width - 32);
             int h = Math.min(440, this.height - 32);
             int x = (this.width - w) / 2;
@@ -147,7 +149,7 @@ public final class VelmoraScreen extends Screen {
                 return true;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override
