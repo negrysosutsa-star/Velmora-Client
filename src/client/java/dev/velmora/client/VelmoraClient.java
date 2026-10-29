@@ -3,6 +3,7 @@ package dev.velmora.client;
 import dev.velmora.client.gui.VelmoraScreen;
 import dev.velmora.client.module.AutoSprint;
 import dev.velmora.client.module.TriggerBot;
+import dev.velmora.client.module.FakePlayer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -38,6 +39,7 @@ public final class VelmoraClient implements ClientModInitializer {
 
         AutoSprint.register();
         TriggerBot.register();
+        FakePlayer.register();
         LOGGER.info("Velmora Client initialized.");
     }
 }
