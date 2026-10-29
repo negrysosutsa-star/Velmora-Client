@@ -2,6 +2,7 @@ package dev.velmora.client.gui;
 
 import dev.velmora.client.module.AutoSprint;
 import dev.velmora.client.module.CritCheck;
+import dev.velmora.client.module.TriggerBot;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -69,10 +70,12 @@ public final class VelmoraScreen extends Screen {
                     "Состояние: " + CritCheck.getStatus(client));
             drawCard(context, contentX, y + 216, contentW, 62, "Server TPS",
                     "TPS: нет достоверных данных от сервера");
-            drawCard(context, contentX, y + 289, contentW, 70, "Trigger Bot • настройки",
-                    "Панель параметров — без автоматической атаки.");
-            context.drawTextWithShadow(this.textRenderer, "Дистанция: 3.0 блоков", contentX + 14, y + 325, MUTED);
-            context.drawTextWithShadow(this.textRenderer, "Задержка: ручная / не задана", contentX + 14, y + 341, MUTED);
+            drawCard(context, contentX, y + 289, contentW, 70, "Trigger Bot",
+                    "Атака цели под прицелом: " + (TriggerBot.isEnabled() ? "ВКЛ" : "ВЫКЛ"));
+            context.drawTextWithShadow(this.textRenderer, "Дистанция: " + TriggerBot.getRange() + " блоков", contentX + 14, y + 325, MUTED);
+            context.drawTextWithShadow(this.textRenderer, "Задержка: " + TriggerBot.getDelayTicks() + " тиков", contentX + 14, y + 341, MUTED);
+            context.drawTextWithShadow(this.textRenderer, "Только игроки: " + (TriggerBot.isPlayersOnly() ? "ДА" : "НЕТ"),
+                    contentX + 14, y + 353, PURPLE);
         }
         context.drawTextWithShadow(this.textRenderer, "VELMORA  •  CUSTOM CLIENT", x + 18, y + h - 25, MUTED);
         super.render(context, mouseX, mouseY, delta);
@@ -115,6 +118,11 @@ public final class VelmoraScreen extends Screen {
             if (!combatTab && mouseX >= contentX && mouseX <= contentX + contentW
                     && mouseY >= cardY && mouseY <= cardY + 92) {
                 AutoSprint.setEnabled(!AutoSprint.isEnabled());
+                return true;
+            }
+            if (combatTab && mouseX >= contentX && mouseX <= contentX + contentW
+                    && mouseY >= y + 289 && mouseY <= y + 359) {
+                TriggerBot.setEnabled(!TriggerBot.isEnabled());
                 return true;
             }
         }
