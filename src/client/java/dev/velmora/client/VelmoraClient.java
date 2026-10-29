@@ -24,7 +24,7 @@ public final class VelmoraClient implements ClientModInitializer {
                 "key.velmora.open_menu",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_INSERT,
-                "category.velmora"
+                KeyBinding.Category.create("category.velmora")
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
