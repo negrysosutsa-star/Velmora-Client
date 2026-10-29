@@ -6,7 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 
@@ -46,7 +46,7 @@ public final class TriggerBot {
         if (doNotHitWhileEating && player.isUsingItem() && player.getActiveItem().contains(DataComponentTypes.FOOD)) return;
 
         ItemStack held = player.getMainHandStack();
-        if (requireSword && !(held.getItem() instanceof SwordItem)) return;
+        if (requireSword && !(held.isIn(ItemTags.SWORDS))) return;
 
         if (ticksSinceAttack < delayTicks) {
             ticksSinceAttack++;
