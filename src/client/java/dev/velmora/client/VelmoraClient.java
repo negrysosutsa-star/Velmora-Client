@@ -21,7 +21,7 @@ public final class VelmoraClient implements ClientModInitializer {
         openMenuKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.velmora.open_menu",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_RIGHT_SHIFT,
+                GLFW.GLFW_KEY_INSERT,
                 "category.velmora"
         ));
 
