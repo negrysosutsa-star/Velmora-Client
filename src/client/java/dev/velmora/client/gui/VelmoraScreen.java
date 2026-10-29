@@ -70,12 +70,18 @@ public final class VelmoraScreen extends Screen {
                     "Состояние: " + CritCheck.getStatus(client));
             drawCard(context, contentX, y + 216, contentW, 62, "Server TPS",
                     "TPS: нет достоверных данных от сервера");
-            drawCard(context, contentX, y + 289, contentW, 70, "Trigger Bot",
-                    "Атака цели под прицелом: " + (TriggerBot.isEnabled() ? "ВКЛ" : "ВЫКЛ"));
-            context.drawTextWithShadow(this.textRenderer, "Дистанция: " + TriggerBot.getRange() + " блоков", contentX + 14, y + 325, MUTED);
-            context.drawTextWithShadow(this.textRenderer, "Задержка: " + TriggerBot.getDelayTicks() + " тиков", contentX + 14, y + 341, MUTED);
+            drawCard(context, contentX, y + 289, contentW, 104, "Trigger Bot",
+                    "Статус: " + (TriggerBot.isEnabled() ? "ВКЛ" : "ВЫКЛ") + "  •  клик по заголовку");
+            context.drawTextWithShadow(this.textRenderer, "Режим: " + (TriggerBot.getHitMode() == TriggerBot.HitMode.CRITS_ONLY ? "Только криты" : "Криты + сплеш"),
+                    contentX + 14, y + 325, PURPLE);
+            context.drawTextWithShadow(this.textRenderer, "Не бить во время еды: " + (TriggerBot.isDoNotHitWhileEating() ? "ВКЛ" : "ВЫКЛ"),
+                    contentX + 14, y + 341, MUTED);
+            context.drawTextWithShadow(this.textRenderer, "Требовать меч: " + (TriggerBot.isRequireSword() ? "ВКЛ" : "ВЫКЛ"),
+                    contentX + 14, y + 357, MUTED);
+            context.drawTextWithShadow(this.textRenderer, "Дистанция: " + TriggerBot.getRange() + "  •  задержка: " + TriggerBot.getDelayTicks() + " тиков",
+                    contentX + 14, y + 373, MUTED);
             context.drawTextWithShadow(this.textRenderer, "Только игроки: " + (TriggerBot.isPlayersOnly() ? "ДА" : "НЕТ"),
-                    contentX + 14, y + 353, PURPLE);
+                    contentX + 14, y + 385, MUTED);
         }
         context.drawTextWithShadow(this.textRenderer, "VELMORA  •  CUSTOM CLIENT", x + 18, y + h - 25, MUTED);
         super.render(context, mouseX, mouseY, delta);
@@ -121,8 +127,23 @@ public final class VelmoraScreen extends Screen {
                 return true;
             }
             if (combatTab && mouseX >= contentX && mouseX <= contentX + contentW
-                    && mouseY >= y + 289 && mouseY <= y + 359) {
+                    && mouseY >= y + 289 && mouseY <= y + 314) {
                 TriggerBot.setEnabled(!TriggerBot.isEnabled());
+                return true;
+            }
+            if (combatTab && mouseX >= contentX && mouseX <= contentX + contentW
+                    && mouseY >= y + 316 && mouseY <= y + 336) {
+                TriggerBot.cycleHitMode();
+                return true;
+            }
+            if (combatTab && mouseX >= contentX && mouseX <= contentX + contentW
+                    && mouseY >= y + 337 && mouseY <= y + 352) {
+                TriggerBot.setDoNotHitWhileEating(!TriggerBot.isDoNotHitWhileEating());
+                return true;
+            }
+            if (combatTab && mouseX >= contentX && mouseX <= contentX + contentW
+                    && mouseY >= y + 353 && mouseY <= y + 368) {
+                TriggerBot.setRequireSword(!TriggerBot.isRequireSword());
                 return true;
             }
         }
