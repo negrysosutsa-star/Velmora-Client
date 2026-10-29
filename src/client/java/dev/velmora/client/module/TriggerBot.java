@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.Hand;
@@ -42,7 +43,7 @@ public final class TriggerBot {
         }
 
         PlayerEntity player = client.player;
-        if (doNotHitWhileEating && player.isUsingItem() && player.getActiveItem().isFood()) return;
+        if (doNotHitWhileEating && player.isUsingItem() && player.getActiveItem().contains(DataComponentTypes.FOOD)) return;
 
         ItemStack held = player.getMainHandStack();
         if (requireSword && !(held.getItem() instanceof SwordItem)) return;
