@@ -33,17 +33,12 @@ public final class FakePlayer {
             remove();
             return;
         }
-        if (dummy != null && dummy.getWorld() == client.world) return;
+        if (dummy != null) return;
 
         remove();
         ClientWorld world = client.world;
         GameProfile profile = new GameProfile(UUID.fromString("d34dbeef-1234-4abc-8def-0123456789ab"), "VelmoraDummy");
-        dummy = new OtherClientPlayerEntity(world, profile) {
-            @Override
-            public boolean damage(net.minecraft.entity.damage.DamageSource source, float amount) {
-                return false;
-            }
-        };
+        dummy = new OtherClientPlayerEntity(world, profile);
         dummy.setId(ENTITY_ID);
         dummy.copyPositionAndRotation(client.player);
         dummy.setYaw(client.player.getYaw());
