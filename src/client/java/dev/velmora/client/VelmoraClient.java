@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ public final class VelmoraClient implements ClientModInitializer {
                 "key.velmora.open_menu",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_INSERT,
-                KeyBinding.Category.create("category.velmora")
+                KeyBinding.Category.create(Identifier.of("velmora", "main"))
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
