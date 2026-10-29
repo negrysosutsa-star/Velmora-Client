@@ -1,14 +1,14 @@
 package dev.velmora.client.gui;
 
 import dev.velmora.client.module.AutoSprint;
+import dev.velmora.client.module.CritCheck;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
-/**
- * Lightweight purple-themed client menu. Uses vanilla drawing APIs so it stays dependency-light.
- */
+/** Original dark-purple client menu with movement and combat diagnostics. */
 public final class VelmoraScreen extends Screen {
     private static final int BG = 0xF20A0814;
     private static final int PANEL = 0xF2120D20;
@@ -17,6 +17,7 @@ public final class VelmoraScreen extends Screen {
     private static final int PURPLE_DARK = 0xFF6F2AB7;
     private static final int TEXT = 0xFFF5EDFF;
     private static final int MUTED = 0xFFB8A9C9;
+    private boolean combatTab = false;
 
     public VelmoraScreen() {
         super(Text.literal("Velmora Client"));
@@ -32,48 +33,62 @@ public final class VelmoraScreen extends Screen {
 
         context.fill(x - 2, y - 2, x + w + 2, y + h + 2, 0xAA8C39D8);
         context.fill(x, y, x + w, y + h, BG);
-
-        // Header
         context.fill(x, y, x + w, y + 76, PANEL);
         context.fill(x, y + 74, x + w, y + 76, PURPLE_DARK);
         context.drawTextWithShadow(this.textRenderer, "V", x + 22, y + 18, PURPLE);
         context.drawTextWithShadow(this.textRenderer, "VELMORA", x + 44, y + 15, TEXT);
         context.drawTextWithShadow(this.textRenderer, "CLIENT  /  1.21.11", x + 44, y + 32, MUTED);
-        context.drawTextWithShadow(this.textRenderer, "RIGHT SHIFT  •  CLOSE", x + w - 166, y + 28, MUTED);
+        context.drawTextWithShadow(this.textRenderer, "INSERT  •  CLOSE", x + w - 135, y + 28, MUTED);
 
         int sidebarW = Math.min(158, w / 3);
         context.fill(x + 10, y + 88, x + sidebarW, y + h - 12, PANEL);
-        context.fill(x + 20, y + 105, x + sidebarW - 10, y + 130, PURPLE_DARK);
-        context.drawTextWithShadow(this.textRenderer, "⌂  Главная", x + 30, y + 113, TEXT);
-        context.drawTextWithShadow(this.textRenderer, "⚔  Combat", x + 30, y + 151, MUTED);
+        context.fill(x + 20, y + (combatTab ? 143 : 105), x + sidebarW - 10, y + (combatTab ? 168 : 130), PURPLE_DARK);
+        context.drawTextWithShadow(this.textRenderer, "⌂  Главная", x + 30, y + 113, combatTab ? MUTED : TEXT);
+        context.drawTextWithShadow(this.textRenderer, "⚔  Combat", x + 30, y + 151, combatTab ? TEXT : MUTED);
         context.drawTextWithShadow(this.textRenderer, "◈  Movement", x + 30, y + 181, PURPLE);
         context.drawTextWithShadow(this.textRenderer, "◉  Render", x + 30, y + 211, MUTED);
         context.drawTextWithShadow(this.textRenderer, "⚙  Settings", x + 30, y + 241, MUTED);
 
         int contentX = x + sidebarW + 22;
         int contentW = w - sidebarW - 34;
-        context.drawTextWithShadow(this.textRenderer, "MOVEMENT", contentX, y + 94, PURPLE);
-        context.drawTextWithShadow(this.textRenderer, "Твои настройки. Твой стиль.", contentX, y + 110, MUTED);
+        context.drawTextWithShadow(this.textRenderer, combatTab ? "COMBAT / DIAGNOSTICS" : "MOVEMENT", contentX, y + 94, PURPLE);
+        context.drawTextWithShadow(this.textRenderer, combatTab ? "Состояние игрока и соединения" : "Твои настройки. Твой стиль.", contentX, y + 110, MUTED);
 
-        int cardY = y + 143;
-        context.fill(contentX, cardY, contentX + contentW, cardY + 92, PANEL_ALT);
-        context.fill(contentX, cardY, contentX + 3, cardY + 92, PURPLE);
-        context.drawTextWithShadow(this.textRenderer, "Auto Sprint", contentX + 15, cardY + 13, TEXT);
-        context.drawTextWithShadow(this.textRenderer, "Автоматически включает спринт при движении вперёд.", contentX + 15, cardY + 32, MUTED);
-
-        boolean active = AutoSprint.isEnabled();
-        int bx = contentX + contentW - 72;
-        int by = cardY + 14;
-        context.fill(bx, by, bx + 56, by + 22, active ? PURPLE_DARK : 0xFF40364C);
-        context.fill(bx + (active ? 34 : 4), by + 4, bx + (active ? 50 : 20), by + 18, active ? PURPLE : 0xFF9A8AA8);
-        context.drawTextWithShadow(this.textRenderer, active ? "ON" : "OFF", bx, by + 29, active ? PURPLE : MUTED);
-
-        context.fill(contentX, cardY + 105, contentX + contentW, cardY + 168, PANEL);
-        context.drawTextWithShadow(this.textRenderer, "Velmora Client", contentX + 14, cardY + 118, TEXT);
-        context.drawTextWithShadow(this.textRenderer, "Нажми на карточку Auto Sprint, чтобы переключить функцию.", contentX + 14, cardY + 138, MUTED);
-
+        if (!combatTab) {
+            drawCard(context, contentX, y + 143, contentW, 92, "Auto Sprint",
+                    "Автоматический спринт при движении вперёд.");
+            drawToggle(context, contentX + contentW - 72, y + 157, AutoSprint.isEnabled());
+            context.drawTextWithShadow(this.textRenderer, AutoSprint.isEnabled() ? "ON" : "OFF",
+                    contentX + contentW - 72, y + 186, AutoSprint.isEnabled() ? PURPLE : MUTED);
+            context.fill(contentX, y + 248, contentX + contentW, y + 311, PANEL);
+            context.drawTextWithShadow(this.textRenderer, "Velmora Client", contentX + 14, y + 261, TEXT);
+            context.drawTextWithShadow(this.textRenderer, "Выбери Combat слева для диагностики.", contentX + 14, y + 281, MUTED);
+        } else {
+            MinecraftClient client = MinecraftClient.getInstance();
+            drawCard(context, contentX, y + 143, contentW, 62, "Crit Check",
+                    "Состояние: " + CritCheck.getStatus(client));
+            drawCard(context, contentX, y + 216, contentW, 62, "Server TPS",
+                    "TPS: нет достоверных данных от сервера");
+            drawCard(context, contentX, y + 289, contentW, 70, "Trigger Bot • настройки",
+                    "Панель параметров — без автоматической атаки.");
+            context.drawTextWithShadow(this.textRenderer, "Дистанция: 3.0 блоков", contentX + 14, y + 325, MUTED);
+            context.drawTextWithShadow(this.textRenderer, "Задержка: ручная / не задана", contentX + 14, y + 341, MUTED);
+        }
         context.drawTextWithShadow(this.textRenderer, "VELMORA  •  CUSTOM CLIENT", x + 18, y + h - 25, MUTED);
         super.render(context, mouseX, mouseY, delta);
+    }
+
+    private void drawCard(DrawContext context, int x, int y, int w, int h, String title, String subtitle) {
+        context.fill(x, y, x + w, y + h, PANEL_ALT);
+        context.fill(x, y, x + 3, y + h, PURPLE);
+        context.drawTextWithShadow(this.textRenderer, title, x + 14, y + 12, TEXT);
+        context.drawTextWithShadow(this.textRenderer, subtitle, x + 14, y + 32, MUTED);
+    }
+
+    private void drawToggle(DrawContext context, int x, int y, boolean enabled) {
+        context.fill(x, y, x + 56, y + 22, enabled ? PURPLE_DARK : 0xFF40364C);
+        context.fill(x + (enabled ? 34 : 4), y + 4, x + (enabled ? 50 : 20), y + 18,
+                enabled ? PURPLE : 0xFF9A8AA8);
     }
 
     @Override
@@ -84,10 +99,21 @@ public final class VelmoraScreen extends Screen {
             int x = (this.width - w) / 2;
             int y = (this.height - h) / 2;
             int sidebarW = Math.min(158, w / 3);
+            if (mouseX >= x + 20 && mouseX <= x + sidebarW - 10) {
+                if (mouseY >= y + 138 && mouseY <= y + 173) {
+                    combatTab = true;
+                    return true;
+                }
+                if (mouseY >= y + 100 && mouseY <= y + 135) {
+                    combatTab = false;
+                    return true;
+                }
+            }
             int contentX = x + sidebarW + 22;
             int contentW = w - sidebarW - 34;
             int cardY = y + 143;
-            if (mouseX >= contentX && mouseX <= contentX + contentW && mouseY >= cardY && mouseY <= cardY + 92) {
+            if (!combatTab && mouseX >= contentX && mouseX <= contentX + contentW
+                    && mouseY >= cardY && mouseY <= cardY + 92) {
                 AutoSprint.setEnabled(!AutoSprint.isEnabled());
                 return true;
             }
