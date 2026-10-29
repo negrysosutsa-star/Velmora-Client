@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "velmora",
+  "version": "${version}",
+  "name": "Velmora Client",
+  "description": "A client-side Minecraft project built with Fabric and Yarn.",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.velmora.client.VelmoraClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
