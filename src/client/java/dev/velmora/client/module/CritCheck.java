@@ -15,7 +15,7 @@ public final class CritCheck {
         if (player.isClimbing()) return "На лестнице";
         if (player.hasVehicle()) return "На транспорте";
         if (player.getAbilities().flying) return "Полёт";
-        if (player.getFallDistance() <= 0.0F) return "Нет падения";
-        return "Падение: " + String.format(java.util.Locale.ROOT, "%.2f", player.getFallDistance());
+        if (player.fallDistance <= 0.0F) return "Нет падения";
+        return "Падение: " + String.format(java.util.Locale.ROOT, "%.2f", player.fallDistance);
     }
 }
